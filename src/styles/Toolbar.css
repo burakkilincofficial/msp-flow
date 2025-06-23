@@ -57,6 +57,18 @@
   border-color: #cbd5e1;
 }
 
+.toolbar-btn.merge {
+  background: white;
+  color: #059669;
+  border: 1px solid #10b981;
+}
+
+.toolbar-btn.merge:hover {
+  background: #10b981;
+  color: white;
+  transform: translateY(-1px);
+}
+
 .toolbar-btn.icon-only {
   padding: 10px;
   background: #f8fafc;

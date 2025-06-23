@@ -47,4 +47,65 @@
   color: #64748b;
   font-size: 16px;
   font-weight: 500;
+}
+
+/* ReactFlow Edge Stilleri */
+.react-flow__edge-path {
+  stroke: #667eea;
+  stroke-width: 3px;
+  transition: all 0.2s ease;
+}
+
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: #4f46e5;
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 8px rgba(79, 70, 229, 0.5));
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #ef4444;
+  stroke-width: 4px;
+  stroke-dasharray: 10, 5;
+  animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -15;
+  }
+}
+
+.react-flow__edge-text {
+  fill: #374151;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ReactFlow Controls Stilleri */
+.react-flow__controls {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__controls-button {
+  background: white;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.react-flow__controls-button:hover {
+  background: #f1f5f9;
+  color: #374151;
+}
+
+/* ReactFlow MiniMap Stilleri */
+.react-flow__minimap {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 } 

@@ -114,4 +114,126 @@
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   max-height: 200px;
   overflow-y: auto;
+}
+
+/* Exception Yönetimi Stilleri */
+.exceptions-section {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-header h5 {
+  margin: 0;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.add-btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.exception-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.exception-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.exception-header span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.remove-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.remove-btn:hover {
+  background: #dc2626;
+  transform: scale(1.1);
+}
+
+.exception-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exception-fields input,
+.exception-fields textarea {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s;
+  background: white;
+}
+
+.exception-fields input:focus,
+.exception-fields textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.exception-fields textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.no-exceptions {
+  text-align: center;
+  color: #64748b;
+  font-size: 13px;
+  font-style: italic;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 6px;
+  margin: 0;
 } 

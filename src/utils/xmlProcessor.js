@@ -99,6 +99,7 @@ export class XmlProcessor {
             successFlowStatus: element.getAttribute('successFlowStatus') || '',
             failFlowStatus: element.getAttribute('failFlowStatus') || '',
             interaction: element.getAttribute('interaction') || '',
+            exceptions: this.parseExceptions(element),
             attributes: this.getElementAttributes(element)
           };
           break;
@@ -158,6 +159,23 @@ export class XmlProcessor {
       }
     }
     return attributes;
+  }
+
+  parseExceptions(element) {
+    const exceptions = [];
+    const exceptionElements = element.getElementsByTagName('exception');
+    
+    for (let i = 0; i < exceptionElements.length; i++) {
+      const exceptionEl = exceptionElements[i];
+      exceptions.push({
+        idCondition: exceptionEl.getAttribute('idCondition') || '',
+        stepId: exceptionEl.getAttribute('stepId') || '',
+        flowStatus: exceptionEl.getAttribute('flowStatus') || '',
+        description: exceptionEl.textContent || ''
+      });
+    }
+    
+    return exceptions;
   }
 
   generateXml(flowData) {
@@ -237,6 +255,18 @@ export class XmlProcessor {
         if (data.successFlowStatus) element.setAttribute('successFlowStatus', data.successFlowStatus);
         if (data.failFlowStatus) element.setAttribute('failFlowStatus', data.failFlowStatus);
         if (data.interaction) element.setAttribute('interaction', data.interaction);
+        
+        // Exception'ları ekle
+        if (data.exceptions && data.exceptions.length > 0) {
+          data.exceptions.forEach(exception => {
+            const exceptionEl = xmlDoc.createElement('exception');
+            if (exception.idCondition) exceptionEl.setAttribute('idCondition', exception.idCondition);
+            if (exception.stepId) exceptionEl.setAttribute('stepId', exception.stepId);
+            if (exception.flowStatus) exceptionEl.setAttribute('flowStatus', exception.flowStatus);
+            if (exception.description) exceptionEl.textContent = exception.description;
+            element.appendChild(exceptionEl);
+          });
+        }
         break;
         
       default:
@@ -265,6 +295,95 @@ export class XmlProcessor {
     });
     
     return element;
+  }
+
+  /**
+   * XML içeriğini güzel formatlayarak düzenler
+   * @param {string} xmlString - Formatlanacak XML string
+   * @returns {string} - Formatlanmış XML string
+   */
+  formatXml(xmlString) {
+    try {
+      // XML'i parse et
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlString, 'application/xml');
+      
+      // Parse error kontrolü
+      const parserError = xmlDoc.getElementsByTagName('parsererror');
+      if (parserError.length > 0) {
+        throw new Error('XML parse hatası: ' + parserError[0].textContent);
+      }
+
+      // XMLSerializer ile string'e çevir
+      const serializer = new XMLSerializer();
+      let formattedXml = serializer.serializeToString(xmlDoc);
+
+      // Manuel formatting - indentation ekle
+      formattedXml = this.addIndentation(formattedXml);
+      
+      return formattedXml;
+    } catch (error) {
+      console.error('XML formatting error:', error);
+      // Eğer parse edilemezse, basit string formatting yap
+      return this.simpleFormatXml(xmlString);
+    }
+  }
+
+  /**
+   * XML'e indentation ekler
+   * @param {string} xml - Formatlanacak XML
+   * @returns {string} - Indentationlı XML
+   */
+  addIndentation(xml) {
+    const PADDING = '  '; // 2 space indentation
+    const reg = /(>)(<)(\/*)/g;
+    let formatted = xml.replace(reg, '$1\n$2$3');
+    
+    let pad = 0;
+    return formatted.split('\n').map(line => {
+      let indent = 0;
+      if (line.match(/.+<\/\w[^>]*>$/)) {
+        indent = 0;
+      } else if (line.match(/^<\/\w/) && pad > 0) {
+        pad -= 1;
+      } else if (line.match(/^<\w[^>]*[^\/]>.*$/)) {
+        indent = 1;
+      } else {
+        indent = 0;
+      }
+      
+      const padding = PADDING.repeat(pad);
+      pad += indent;
+      return padding + line;
+    }).join('\n');
+  }
+
+  /**
+   * Basit XML formatting (fallback)
+   * @param {string} xml - Formatlanacak XML
+   * @returns {string} - Formatlanmış XML
+   */
+  simpleFormatXml(xml) {
+    const reg = /(>)(<)(\/*)/g;
+    let formatted = xml.replace(reg, '$1\n$2$3');
+    
+    let pad = 0;
+    return formatted.split('\n').map(line => {
+      let indent = 0;
+      if (line.match(/.+<\/\w[^>]*>$/)) {
+        indent = 0;
+      } else if (line.match(/^<\/\w/) && pad > 0) {
+        pad -= 1;
+      } else if (line.match(/^<\w[^>]*[^\/]>.*$/)) {
+        indent = 1;
+      } else {
+        indent = 0;
+      }
+      
+      const padding = '  '.repeat(pad);
+      pad += indent;
+      return padding + line.trim();
+    }).filter(line => line.length > 0).join('\n');
   }
 }
 

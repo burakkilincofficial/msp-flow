@@ -20,7 +20,7 @@ const nodeTypes = {
 };
 
 const FlowCanvas = () => {
-  const { flowData, selectedElement, setSelectedElement } = useFlow();
+  const { flowData, selectedElement, setSelectedElement, setFlowData } = useFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const reactFlowInstance = useReactFlow();
@@ -43,10 +43,97 @@ const FlowCanvas = () => {
     }
   }, [flowData, setNodes, setEdges, reactFlowInstance]);
 
+  // Toolbar event listener'ları
+  useEffect(() => {
+    const handleAutoLayout = () => {
+      console.log('Auto layout tetiklendi');
+      setNodes((currentNodes) => {
+        const layoutedNodes = currentNodes.map((node, index) => ({
+          ...node,
+          position: {
+            x: (index % 3) * 300 + 100,
+            y: Math.floor(index / 3) * 150 + 100,
+          },
+        }));
+        
+        // Layout sonrası fitView
+        setTimeout(() => {
+          try {
+            reactFlowInstance.fitView({ padding: 0.1 });
+          } catch (error) {
+            console.warn('Auto layout fitView hatası:', error);
+          }
+        }, 100);
+        
+        return layoutedNodes;
+      });
+    };
+
+    const handleZoomIn = () => {
+      console.log('Zoom in tetiklendi');
+      try {
+        reactFlowInstance.zoomIn();
+      } catch (error) {
+        console.warn('Zoom in hatası:', error);
+      }
+    };
+
+    const handleZoomOut = () => {
+      console.log('Zoom out tetiklendi');
+      try {
+        reactFlowInstance.zoomOut();
+      } catch (error) {
+        console.warn('Zoom out hatası:', error);
+      }
+    };
+
+    // Event listener'ları ekle
+    window.addEventListener('autoLayout', handleAutoLayout);
+    window.addEventListener('zoomIn', handleZoomIn);
+    window.addEventListener('zoomOut', handleZoomOut);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('autoLayout', handleAutoLayout);
+      window.removeEventListener('zoomIn', handleZoomIn);
+      window.removeEventListener('zoomOut', handleZoomOut);
+    };
+  }, [setNodes, reactFlowInstance]);
+
   // Bağlantı oluşturma
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges]
+    (params) => {
+      const newEdge = addEdge(params, edges);
+      setEdges(newEdge);
+      
+      // FlowData'yı güncelle
+      if (flowData) {
+        setFlowData(prevData => ({
+          ...prevData,
+          edges: newEdge
+        }));
+      }
+    },
+    [setEdges, edges, flowData, setFlowData]
+  );
+
+  // Bağlantı silme
+  const onEdgesDelete = useCallback(
+    (edgesToDelete) => {
+      const updatedEdges = edges.filter(edge => 
+        !edgesToDelete.some(deletedEdge => deletedEdge.id === edge.id)
+      );
+      setEdges(updatedEdges);
+      
+      // FlowData'yı güncelle
+      if (flowData) {
+        setFlowData(prevData => ({
+          ...prevData,
+          edges: updatedEdges
+        }));
+      }
+    },
+    [edges, setEdges, flowData, setFlowData]
   );
 
   // Node seçimi
@@ -54,6 +141,44 @@ const FlowCanvas = () => {
     console.log('Node seçildi:', node);
     setSelectedElement(node);
   }, [setSelectedElement]);
+
+  // Node hareket ettirme
+  const onNodeDragStop = useCallback((event, node) => {
+    if (flowData) {
+      setFlowData(prevData => ({
+        ...prevData,
+        nodes: prevData.nodes.map(n => 
+          n.id === node.id ? { ...n, position: node.position } : n
+        )
+      }));
+    }
+  }, [flowData, setFlowData]);
+
+  // Node silme
+  const onNodesDelete = useCallback((nodesToDelete) => {
+    if (flowData) {
+      const nodeIdsToDelete = nodesToDelete.map(node => node.id);
+      
+      // Node'ları ve bağlı edge'leri sil
+      const updatedNodes = flowData.nodes.filter(node => 
+        !nodeIdsToDelete.includes(node.id)
+      );
+      const updatedEdges = flowData.edges.filter(edge => 
+        !nodeIdsToDelete.includes(edge.source) && !nodeIdsToDelete.includes(edge.target)
+      );
+      
+      setFlowData(prevData => ({
+        ...prevData,
+        nodes: updatedNodes,
+        edges: updatedEdges
+      }));
+      
+      // Silinen node seçiliyse seçimi kaldır
+      if (selectedElement && nodeIdsToDelete.includes(selectedElement.id)) {
+        setSelectedElement(null);
+      }
+    }
+  }, [flowData, setFlowData, selectedElement, setSelectedElement]);
 
   // Loading durumu
   if (!flowData) {
@@ -88,13 +213,26 @@ const FlowCanvas = () => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onEdgesDelete={onEdgesDelete}
+        onNodesDelete={onNodesDelete}
         onNodeClick={onNodeClick}
+        onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         fitView
         attributionPosition="bottom-left"
         defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         minZoom={0.1}
         maxZoom={2}
+        deleteKeyCode={['Backspace', 'Delete']}
+        multiSelectionKeyCode={['Control', 'Meta']}
+        nodesDraggable={true}
+        nodesConnectable={true}
+        elementsSelectable={true}
+        connectionMode="loose"
+        snapToGrid={false}
+        snapGrid={[15, 15]}
+        connectionLineType="smoothstep"
+        connectionLineStyle={{ stroke: '#667eea', strokeWidth: 3 }}
       >
         <Controls />
         <MiniMap 

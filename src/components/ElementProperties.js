@@ -34,6 +34,31 @@ const ElementProperties = ({ selectedElement }) => {
     }
   };
 
+  const handleExceptionChange = (index, field, value) => {
+    const updatedExceptions = [...(properties.exceptions || [])];
+    if (!updatedExceptions[index]) {
+      updatedExceptions[index] = {};
+    }
+    updatedExceptions[index][field] = value;
+    handlePropertyChange('exceptions', updatedExceptions);
+  };
+
+  const addException = () => {
+    const newException = {
+      idCondition: '',
+      stepId: '',
+      flowStatus: '',
+      description: ''
+    };
+    const updatedExceptions = [...(properties.exceptions || []), newException];
+    handlePropertyChange('exceptions', updatedExceptions);
+  };
+
+  const removeException = (index) => {
+    const updatedExceptions = (properties.exceptions || []).filter((_, i) => i !== index);
+    handlePropertyChange('exceptions', updatedExceptions);
+  };
+
   if (!selectedElement) {
     return (
       <div className="element-properties empty">
@@ -84,6 +109,53 @@ const ElementProperties = ({ selectedElement }) => {
             {renderPropertyField('successFlowStatus', properties.successFlowStatus)}
             {renderPropertyField('failFlowStatus', properties.failFlowStatus)}
             {renderPropertyField('interaction', properties.interaction)}
+            
+            {/* Exception Yönetimi */}
+            <div className="exceptions-section">
+              <div className="section-header">
+                <h5>Exception'lar</h5>
+                <button className="add-btn" onClick={addException}>+ Ekle</button>
+              </div>
+              
+              {(properties.exceptions || []).map((exception, index) => (
+                <div key={index} className="exception-item">
+                  <div className="exception-header">
+                    <span>Exception #{index + 1}</span>
+                    <button className="remove-btn" onClick={() => removeException(index)}>×</button>
+                  </div>
+                  
+                  <div className="exception-fields">
+                    <input
+                      type="text"
+                      placeholder="ID Condition (ör: 4021,4015,4019)"
+                      value={exception.idCondition || ''}
+                      onChange={(e) => handleExceptionChange(index, 'idCondition', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Step ID"
+                      value={exception.stepId || ''}
+                      onChange={(e) => handleExceptionChange(index, 'stepId', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Flow Status"
+                      value={exception.flowStatus || ''}
+                      onChange={(e) => handleExceptionChange(index, 'flowStatus', e.target.value)}
+                    />
+                    <textarea
+                      placeholder="Açıklama"
+                      value={exception.description || ''}
+                      onChange={(e) => handleExceptionChange(index, 'description', e.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              {(!properties.exceptions || properties.exceptions.length === 0) && (
+                <p className="no-exceptions">Henüz exception eklenmedi</p>
+              )}
+            </div>
           </>
         ) : properties.elementType === 'foreach' ? (
           <>

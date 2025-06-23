@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process name="DeactivationProcess" version="1.0">
+  <logic>
+    <invoke stepId="799" stepDescription="Validation Step" flowStatus="3" successFlowStatus="4" failFlowStatus="5" interaction="sync">
+      <exception idCondition="4021,4015,4019,4020,4018,4023,4027,4029,4025,4026,4024" stepId="799" flowStatus="3">Validation hatası oluştu</exception>
+      <exception idCondition="5001,5002" stepId="800" flowStatus="6">Timeout hatası</exception>
+    </invoke>
+    <if condition="validationResult == true">
+      <invoke stepId="800" stepDescription="Processing Step" flowStatus="4" successFlowStatus="5" failFlowStatus="6" interaction="async">
+        <exception idCondition="6001,6002,6003" stepId="801" flowStatus="7">İşlem hatası</exception>
+      </invoke>
+    </if>
+    <else>
+      <invoke stepId="801" stepDescription="Error Handling" flowStatus="6" successFlowStatus="7" failFlowStatus="8" interaction="sync"/>
+    </else>
+    <foreach>
+      <invoke stepId="802" stepDescription="Cleanup Step" flowStatus="7" successFlowStatus="8" failFlowStatus="9" interaction="sync">
+        <exception idCondition="7001" stepId="803" flowStatus="10">Cleanup hatası</exception>
+      </invoke>
+    </foreach>
+  </logic>
+</process> 

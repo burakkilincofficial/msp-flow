@@ -4,6 +4,7 @@ import FlowCanvas from './components/FlowCanvas';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Toolbar from './components/Toolbar';
+import ConnectionGuide from './components/ConnectionGuide';
 import { XmlProcessor } from './utils/xmlProcessor';
 import { FlowProvider } from './context/FlowContext';
 import 'reactflow/dist/style.css';
@@ -117,18 +118,21 @@ function App() {
     try {
       console.log('XML export başlatılıyor...');
       const processor = new XmlProcessor();
-      const xmlContent = processor.generateXml(flowData);
+      let xmlContent = processor.generateXml(flowData);
+      
+      // XML'i formatla
+      xmlContent = processor.formatXml(xmlContent);
       
       const blob = new Blob([xmlContent], { type: 'application/xml' });
       const url = URL.createObjectURL(blob);
       
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'deactivation_flow.xml';
+      a.download = 'deactivation_flow_formatted.xml';
       a.click();
       
       URL.revokeObjectURL(url);
-      console.log('XML export tamamlandı');
+      console.log('XML export tamamlandı (formatlanmış)');
     } catch (error) {
       console.error('XML export error:', error);
       alert('XML dışa aktarma sırasında hata oluştu: ' + error.message);
@@ -197,6 +201,8 @@ function App() {
               <FlowCanvas />
             </ReactFlowProvider>
           </div>
+          
+          <ConnectionGuide />
           
           {isLoading && (
             <div className="loading-overlay">

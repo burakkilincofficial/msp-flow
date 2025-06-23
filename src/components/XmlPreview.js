@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useFlow } from '../context/FlowContext';
+import { XmlProcessor } from '../utils/xmlProcessor';
 import '../styles/XmlPreview.css';
 
 // Basit SVG icon'lar
@@ -24,10 +25,19 @@ const EyeOffIcon = () => (
   </svg>
 );
 
+const FormatIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="4,7 4,4 20,4 20,7"></polyline>
+    <line x1="9" y1="20" x2="15" y2="20"></line>
+    <line x1="12" y1="4" x2="12" y2="20"></line>
+  </svg>
+);
+
 const XmlPreview = () => {
-  const { xmlContent } = useFlow();
+  const { xmlContent, setXmlContent } = useFlow();
   const [isExpanded, setIsExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isFormatting, setIsFormatting] = useState(false);
 
   const handleCopy = async () => {
     if (xmlContent) {
@@ -43,6 +53,23 @@ const XmlPreview = () => {
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
+  };
+
+  const handleFormatXml = async () => {
+    if (!xmlContent) return;
+    
+    setIsFormatting(true);
+    try {
+      const processor = new XmlProcessor();
+      const formattedXml = processor.formatXml(xmlContent);
+      setXmlContent(formattedXml);
+      console.log('XML başarıyla formatlandı');
+    } catch (error) {
+      console.error('XML formatting error:', error);
+      alert('XML formatlanırken hata oluştu: ' + error.message);
+    } finally {
+      setIsFormatting(false);
+    }
   };
 
   if (!xmlContent) {
@@ -63,6 +90,15 @@ const XmlPreview = () => {
       <div className="preview-header">
         <h5>XML İçeriği</h5>
         <div className="preview-actions">
+          <button 
+            className="action-btn"
+            onClick={handleFormatXml}
+            disabled={isFormatting}
+            title="XML'i Formatla"
+          >
+            <FormatIcon />
+            {isFormatting ? 'Formatlanıyor...' : 'Formatla'}
+          </button>
           <button 
             className="action-btn"
             onClick={toggleExpand}

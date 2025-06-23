@@ -52,8 +52,15 @@ const ZoomOutIcon = () => (
   </svg>
 );
 
-const Toolbar = ({ onFileUpload, onExportXml, isLoading }) => {
+const MergeIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M8 3v3a2 2 0 0 0 2 2h9m-9 8a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h9m0 0-3-3m3 3-3 3"></path>
+  </svg>
+);
+
+const Toolbar = ({ onFileUpload, onExportXml, onMergeFlow, isLoading }) => {
   const fileInputRef = useRef(null);
+  const mergeFileInputRef = useRef(null);
 
   const handleFileClick = () => {
     fileInputRef.current?.click();
@@ -79,6 +86,21 @@ const Toolbar = ({ onFileUpload, onExportXml, isLoading }) => {
     window.dispatchEvent(new CustomEvent('autoLayout'));
   };
 
+  const handleMergeClick = () => {
+    mergeFileInputRef.current?.click();
+  };
+
+  const handleMergeFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === 'text/xml') {
+      onMergeFlow(file);
+    } else {
+      alert('Lütfen geçerli bir XML dosyası seçin');
+    }
+    // Input'u temizle
+    event.target.value = '';
+  };
+
   return (
     <div className="toolbar">
       <div className="toolbar-section">
@@ -99,12 +121,30 @@ const Toolbar = ({ onFileUpload, onExportXml, isLoading }) => {
           <DownloadIcon />
           XML İndir
         </button>
+
+        <button 
+          className="toolbar-btn merge" 
+          onClick={handleMergeClick}
+          disabled={isLoading}
+          title="Başka bir flow ile birleştir"
+        >
+          <MergeIcon />
+          Flow Birleştir
+        </button>
         
         <input
           ref={fileInputRef}
           type="file"
           accept=".xml"
           onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+        
+        <input
+          ref={mergeFileInputRef}
+          type="file"
+          accept=".xml"
+          onChange={handleMergeFileChange}
           style={{ display: 'none' }}
         />
       </div>

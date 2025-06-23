@@ -43,7 +43,7 @@
   background: none;
   border: 1px solid #d1d5db;
   border-radius: 4px;
-  padding: 6px;
+  padding: 6px 8px;
   cursor: pointer;
   color: #6b7280;
   transition: all 0.2s;
@@ -51,12 +51,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .action-btn:hover {
   background: #f9fafb;
   border-color: #9ca3af;
   color: #374151;
+}
+
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.action-btn:disabled:hover {
+  background: none;
+  border-color: #d1d5db;
+  color: #6b7280;
 }
 
 .copied-indicator {

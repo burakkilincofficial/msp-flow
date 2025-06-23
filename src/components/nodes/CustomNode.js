@@ -108,6 +108,12 @@ const CustomNode = ({ data, selected }) => {
                 {data.interaction}
               </div>
             )}
+            {data.exceptions && data.exceptions.length > 0 && (
+              <div className="exceptions-info">
+                <AlertIcon />
+                {data.exceptions.length} Exception
+              </div>
+            )}
           </div>
         );
       
@@ -118,10 +124,20 @@ const CustomNode = ({ data, selected }) => {
 
   return (
     <div className={getNodeClass()}>
+      {/* Giriş Handle - Üst */}
       <Handle
         type="target"
         position={Position.Top}
-        className="node-handle"
+        id="top"
+        className="node-handle target-handle"
+        style={{
+          background: '#667eea',
+          border: '3px solid white',
+          width: '16px',
+          height: '16px',
+          borderRadius: '50%',
+          top: '-8px'
+        }}
       />
       
       <div className="node-header">
@@ -141,10 +157,20 @@ const CustomNode = ({ data, selected }) => {
         </div>
       )}
       
+      {/* Çıkış Handle - Alt */}
       <Handle
         type="source"
         position={Position.Bottom}
-        className="node-handle"
+        id="bottom"
+        className="node-handle source-handle"
+        style={{
+          background: '#667eea',
+          border: '3px solid white',
+          width: '16px',
+          height: '16px',
+          borderRadius: '50%',
+          bottom: '-8px'
+        }}
       />
     </div>
   );
