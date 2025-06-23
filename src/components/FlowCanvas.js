@@ -23,20 +23,25 @@ const FlowCanvas = () => {
   const { flowData, selectedElement, setSelectedElement } = useFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const { fitView, zoomIn, zoomOut } = useReactFlow();
+  const reactFlowInstance = useReactFlow();
 
   // FlowData değiştiğinde nodes ve edges'i güncelle
   useEffect(() => {
-    if (flowData) {
-      setNodes(flowData.nodes || []);
-      setEdges(flowData.edges || []);
+    if (flowData && flowData.nodes && flowData.edges) {
+      console.log('FlowData güncelleniyor:', flowData);
+      setNodes(flowData.nodes);
+      setEdges(flowData.edges);
       
-      // Kısa bir delay ile fitView çağır
+      // FitView'i güvenli bir şekilde çağır
       setTimeout(() => {
-        fitView({ padding: 0.1 });
-      }, 100);
+        try {
+          reactFlowInstance.fitView({ padding: 0.1 });
+        } catch (error) {
+          console.warn('FitView hatası:', error);
+        }
+      }, 200);
     }
-  }, [flowData, setNodes, setEdges, fitView]);
+  }, [flowData, setNodes, setEdges, reactFlowInstance]);
 
   // Bağlantı oluşturma
   const onConnect = useCallback(
@@ -46,43 +51,34 @@ const FlowCanvas = () => {
 
   // Node seçimi
   const onNodeClick = useCallback((event, node) => {
+    console.log('Node seçildi:', node);
     setSelectedElement(node);
   }, [setSelectedElement]);
 
-  // Auto layout event listener - nodes dependency kaldırıldı
-  useEffect(() => {
-    const handleAutoLayout = () => {
-      // Basit bir otomatik düzenleme algoritması
-      setNodes((currentNodes) => {
-        const layoutedNodes = currentNodes.map((node, index) => ({
-          ...node,
-          position: {
-            x: (index % 3) * 300 + 100,
-            y: Math.floor(index / 3) * 150 + 100,
-          },
-        }));
-        
-        setTimeout(() => {
-          fitView({ padding: 0.1 });
-        }, 100);
-        
-        return layoutedNodes;
-      });
-    };
-
-    const handleZoomIn = () => zoomIn();
-    const handleZoomOut = () => zoomOut();
-
-    window.addEventListener('autoLayout', handleAutoLayout);
-    window.addEventListener('zoomIn', handleZoomIn);
-    window.addEventListener('zoomOut', handleZoomOut);
-
-    return () => {
-      window.removeEventListener('autoLayout', handleAutoLayout);
-      window.removeEventListener('zoomIn', handleZoomIn);
-      window.removeEventListener('zoomOut', handleZoomOut);
-    };
-  }, [setNodes, fitView, zoomIn, zoomOut]);
+  // Loading durumu
+  if (!flowData) {
+    return (
+      <div className="flow-canvas">
+        <div className="empty-state">
+          <div className="empty-state-content">
+            <h2>MSP Flow Designer</h2>
+            <p>XML dosyanızı yükleyerek başlayın</p>
+            <div className="empty-state-actions">
+              <button 
+                className="btn primary"
+                onClick={() => {
+                  const input = document.querySelector('input[type="file"]');
+                  if (input) input.click();
+                }}
+              >
+                XML Dosyası Yükle
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flow-canvas">
@@ -96,6 +92,9 @@ const FlowCanvas = () => {
         nodeTypes={nodeTypes}
         fitView
         attributionPosition="bottom-left"
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+        minZoom={0.1}
+        maxZoom={2}
       >
         <Controls />
         <MiniMap 
@@ -113,23 +112,6 @@ const FlowCanvas = () => {
         />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
-      
-      {!flowData && (
-        <div className="empty-state">
-          <div className="empty-state-content">
-            <h2>Akışınızı Tasarlamaya Başlayın</h2>
-            <p>XML dosyanızı yükleyerek veya yeni bir akış oluşturarak başlayabilirsiniz</p>
-            <div className="empty-state-actions">
-              <button 
-                className="btn primary"
-                onClick={() => document.querySelector('input[type="file"]').click()}
-              >
-                XML Dosyası Yükle
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

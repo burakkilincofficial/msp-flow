@@ -72,17 +72,27 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedElement, setSelectedElement] = useState(null);
   const [xmlContent, setXmlContent] = useState('');
+  const [appReady, setAppReady] = useState(false);
 
-  // Debug logging
+  // App başlatma
   useEffect(() => {
     console.log('MSP Flow Designer başlatılıyor...');
     console.log('React version:', React.version);
-    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Environment:', process.env.NODE_ENV || 'development');
+    
+    // Kısa bir delay ile app'i ready yap
+    const timer = setTimeout(() => {
+      setAppReady(true);
+      console.log('App hazır!');
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const handleFileUpload = useCallback(async (file) => {
     setIsLoading(true);
     try {
+      console.log('XML dosyası yükleniyor:', file.name);
       const text = await file.text();
       const processor = new XmlProcessor();
       const parsedData = await processor.parseXml(text);
@@ -105,6 +115,7 @@ function App() {
     }
 
     try {
+      console.log('XML export başlatılıyor...');
       const processor = new XmlProcessor();
       const xmlContent = processor.generateXml(flowData);
       
@@ -117,6 +128,7 @@ function App() {
       a.click();
       
       URL.revokeObjectURL(url);
+      console.log('XML export tamamlandı');
     } catch (error) {
       console.error('XML export error:', error);
       alert('XML dışa aktarma sırasında hata oluştu: ' + error.message);
@@ -133,6 +145,40 @@ function App() {
     isLoading,
     setIsLoading
   };
+
+  // App henüz ready değilse basit loading göster
+  if (!appReady) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#f8f9fa',
+        fontFamily: 'Arial, sans-serif'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '4px solid #e3e3e3',
+            borderTop: '4px solid #007bff',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 20px'
+          }}></div>
+          <h3>MSP Flow Designer</h3>
+          <p>Yükleniyor...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <ErrorBoundary>
