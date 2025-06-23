@@ -49,22 +49,25 @@ const FlowCanvas = () => {
     setSelectedElement(node);
   }, [setSelectedElement]);
 
-  // Auto layout event listener
+  // Auto layout event listener - nodes dependency kaldırıldı
   useEffect(() => {
     const handleAutoLayout = () => {
       // Basit bir otomatik düzenleme algoritması
-      const layoutedNodes = nodes.map((node, index) => ({
-        ...node,
-        position: {
-          x: (index % 3) * 300 + 100,
-          y: Math.floor(index / 3) * 150 + 100,
-        },
-      }));
-      setNodes(layoutedNodes);
-      
-      setTimeout(() => {
-        fitView({ padding: 0.1 });
-      }, 100);
+      setNodes((currentNodes) => {
+        const layoutedNodes = currentNodes.map((node, index) => ({
+          ...node,
+          position: {
+            x: (index % 3) * 300 + 100,
+            y: Math.floor(index / 3) * 150 + 100,
+          },
+        }));
+        
+        setTimeout(() => {
+          fitView({ padding: 0.1 });
+        }, 100);
+        
+        return layoutedNodes;
+      });
     };
 
     const handleZoomIn = () => zoomIn();
@@ -79,7 +82,7 @@ const FlowCanvas = () => {
       window.removeEventListener('zoomIn', handleZoomIn);
       window.removeEventListener('zoomOut', handleZoomOut);
     };
-  }, [nodes, setNodes, fitView, zoomIn, zoomOut]);
+  }, [setNodes, fitView, zoomIn, zoomOut]);
 
   return (
     <div className="flow-canvas">
