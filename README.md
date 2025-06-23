@@ -210,7 +210,7 @@ msp-flow/
 
 ## 📝 Lisans
 
-Bu proje Turkcell Order Management ekibi tarafından geliştirilmiştir.
+Bu proje Turkcell Abonelik ve Sonrasi(MSPS) ekibi tarafından geliştirilmiştir.
 
 ## 📞 Destek
 
