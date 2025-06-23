@@ -57,6 +57,26 @@ module.exports = {
   optimization: {
     splitChunks: {
       chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+          maxSize: 244000,
+        },
+        reactflow: {
+          test: /[\\/]node_modules[\\/]reactflow[\\/]/,
+          name: 'reactflow',
+          chunks: 'all',
+        },
+      },
     },
+    usedExports: true,
+    sideEffects: false,
+  },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
   },
 }; 
