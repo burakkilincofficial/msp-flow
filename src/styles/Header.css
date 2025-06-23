@@ -1,32 +1,63 @@
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #FFD900 100%);
   color: white;
   padding: 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255, 217, 0, 0.1) 50%, transparent 70%);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  position: relative;
+  z-index: 1;
 }
 
-.logo-section h1 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 4px;
+.header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
 }
 
-.logo-section p {
-  font-size: 16px;
-  opacity: 0.9;
+.header-title h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.header-title p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
 }
 
 .header-info {
@@ -39,28 +70,53 @@
 .version {
   background: rgba(255, 255, 255, 0.2);
   padding: 4px 12px;
-  border-radius: 20px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.powered-by {
-  font-size: 12px;
-  opacity: 0.8;
+.environment {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .header-content {
+    padding: 12px 16px;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     text-align: center;
+  }
+  
+  .header-left {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .header-title h1 {
+    font-size: 20px;
+  }
+  
+  .header-title p {
+    font-size: 12px;
   }
   
   .header-info {
     align-items: center;
   }
+}
+
+@media (max-width: 480px) {
+  .header-title h1 {
+    font-size: 18px;
+  }
   
-  .logo-section h1 {
-    font-size: 24px;
+  .header-left svg {
+    width: 100px;
+    height: 26px;
   }
 } 
