@@ -1,14 +1,51 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { 
-  GitBranch, 
-  Play, 
-  RotateCw, 
-  CheckCircle, 
-  AlertCircle,
-  Code 
-} from 'lucide-react';
 import '../../styles/CustomNode.css';
+
+// Basit SVG icon'lar - performans için
+const GitBranchIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="6" y1="3" x2="6" y2="15"></line>
+    <circle cx="18" cy="6" r="3"></circle>
+    <circle cx="6" cy="18" r="3"></circle>
+    <path d="m18 9-6 6"></path>
+  </svg>
+);
+
+const PlayIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polygon points="5,3 19,12 5,21"></polygon>
+  </svg>
+);
+
+const RotateIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="1,4 1,10 7,10"></polyline>
+    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22,4 12,14.01 9,11.01"></polyline>
+  </svg>
+);
+
+const AlertIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="8" x2="12" y2="12"></line>
+    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+  </svg>
+);
+
+const CodeIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="16,18 22,12 16,6"></polyline>
+    <polyline points="8,6 2,12 8,18"></polyline>
+  </svg>
+);
 
 const CustomNode = ({ data, selected }) => {
   const getNodeIcon = () => {
@@ -16,13 +53,13 @@ const CustomNode = ({ data, selected }) => {
       case 'if':
       case 'elseif':
       case 'else':
-        return <GitBranch size={16} />;
+        return <GitBranchIcon />;
       case 'foreach':
-        return <RotateCw size={16} />;
+        return <RotateIcon />;
       case 'invoke':
-        return <Play size={16} />;
+        return <PlayIcon />;
       default:
-        return <Code size={16} />;
+        return <CodeIcon />;
     }
   };
 
@@ -67,7 +104,7 @@ const CustomNode = ({ data, selected }) => {
             )}
             {data.interaction && (
               <div className="interaction">
-                <AlertCircle size={12} />
+                <AlertIcon />
                 {data.interaction}
               </div>
             )}
@@ -100,7 +137,7 @@ const CustomNode = ({ data, selected }) => {
       
       {selected && (
         <div className="selection-indicator">
-          <CheckCircle size={14} />
+          <CheckIcon />
         </div>
       )}
       
