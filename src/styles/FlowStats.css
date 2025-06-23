@@ -1,0 +1,94 @@
+.flow-stats {
+  padding: 0;
+}
+
+.flow-stats.empty {
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.condition {
+  border-left: 4px solid #10b981;
+}
+
+.stat-card.step {
+  border-left: 4px solid #3b82f6;
+}
+
+.stat-card.loop {
+  border-left: 4px solid #f59e0b;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-card.condition .stat-value {
+  color: #10b981;
+}
+
+.stat-card.step .stat-value {
+  color: #3b82f6;
+}
+
+.stat-card.loop .stat-value {
+  color: #f59e0b;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.process-info {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.info-item:not(:last-child) {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.info-item strong {
+  color: #475569;
+  font-weight: 600;
+} 

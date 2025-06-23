@@ -1,0 +1,108 @@
+.xml-preview {
+  padding: 0;
+}
+
+.xml-preview.empty {
+  text-align: center;
+  color: #64748b;
+  padding: 20px;
+}
+
+.xml-preview.empty p {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.xml-preview.empty small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.preview-header h5 {
+  margin: 0;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
+}
+
+.copied-indicator {
+  position: absolute;
+  top: -20px;
+  right: -4px;
+  background: #10b981;
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.xml-content {
+  background: #1f2937;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #374151;
+}
+
+.xml-content.collapsed {
+  max-height: 150px;
+}
+
+.xml-content.expanded {
+  max-height: 400px;
+}
+
+.xml-content pre {
+  margin: 0;
+  padding: 16px;
+  color: #e5e7eb;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow: auto;
+  max-height: inherit;
+}
+
+.preview-info {
+  margin-top: 8px;
+  text-align: right;
+}
+
+.preview-info small {
+  color: #6b7280;
+  font-size: 11px;
+} 

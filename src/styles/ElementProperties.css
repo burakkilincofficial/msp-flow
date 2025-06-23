@@ -1,0 +1,117 @@
+.element-properties {
+  padding: 0;
+}
+
+.element-properties.empty {
+  text-align: center;
+  color: #64748b;
+  padding: 20px;
+}
+
+.element-properties.empty p {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.element-properties.empty small {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.element-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.element-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.element-type {
+  background: #667eea;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.properties-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.property-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.property-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.property-field input,
+.property-field textarea {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+  background: white;
+}
+
+.property-field input:focus,
+.property-field textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.property-field textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.raw-attributes {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.raw-attributes h5 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 600;
+}
+
+.raw-attributes pre {
+  background: #1f2937;
+  color: #e5e7eb;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: 0;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  max-height: 200px;
+  overflow-y: auto;
+} 
