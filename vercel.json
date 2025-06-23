@@ -3,11 +3,6 @@
   "outputDirectory": "dist",
   "devCommand": "npm start",
   "framework": null,
-  "functions": {
-    "app/api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "headers": [
     {
       "source": "/static/(.*)",
