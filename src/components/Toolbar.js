@@ -58,6 +58,15 @@ const MergeIcon = () => (
   </svg>
 );
 
+const FormatIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <path d="M8 12h8"></path>
+    <path d="M10 16h4"></path>
+    <path d="M8 8h8"></path>
+  </svg>
+);
+
 const Toolbar = ({ onFileUpload, onExportXml, onMergeFlow, isLoading }) => {
   const fileInputRef = useRef(null);
   const mergeFileInputRef = useRef(null);
@@ -84,6 +93,11 @@ const Toolbar = ({ onFileUpload, onExportXml, onMergeFlow, isLoading }) => {
   const handleAutoLayout = () => {
     // Bu fonksiyon FlowCanvas'dan tetiklenecek
     window.dispatchEvent(new CustomEvent('autoLayout'));
+  };
+
+  const handleFormat = () => {
+    // Akıllı formatla - node'ları hiyerarşik düzenle
+    window.dispatchEvent(new CustomEvent('smartFormat'));
   };
 
   const handleMergeClick = () => {
@@ -157,6 +171,15 @@ const Toolbar = ({ onFileUpload, onExportXml, onMergeFlow, isLoading }) => {
         >
           <LayoutIcon />
           Otomatik Düzen
+        </button>
+
+        <button 
+          className="toolbar-btn format" 
+          onClick={handleFormat}
+          title="Akıllı Formatla - Node'ları hiyerarşik düzenle"
+        >
+          <FormatIcon />
+          Formatla
         </button>
         
         <button 

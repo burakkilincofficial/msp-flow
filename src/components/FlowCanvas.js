@@ -46,20 +46,32 @@ const FlowCanvas = () => {
   // Toolbar event listener'ları
   useEffect(() => {
     const handleAutoLayout = () => {
-      console.log('Auto layout tetiklendi');
+      console.log('Akıllı formatla tetiklendi');
       setNodes((currentNodes) => {
-        const layoutedNodes = currentNodes.map((node, index) => ({
-          ...node,
-          position: {
-            x: (index % 3) * 300 + 100,
-            y: Math.floor(index / 3) * 150 + 100,
-          },
-        }));
+        // Hiyerarşik düzen için node'ları sırala
+        const sortedNodes = [...currentNodes].sort((a, b) => {
+          // Önce elementType'a göre sırala (if, invoke, foreach)
+          const typeOrder = { 'if': 1, 'elseif': 2, 'else': 3, 'invoke': 4, 'foreach': 5 };
+          return (typeOrder[a.data.elementType] || 6) - (typeOrder[b.data.elementType] || 6);
+        });
+
+        const layoutedNodes = sortedNodes.map((node, index) => {
+          const col = index % 2; // 2 sütun - daha az karışıklık
+          const row = Math.floor(index / 2); // Satır
+          
+          return {
+            ...node,
+            position: {
+              x: col * 450 + 100, // Çok daha geniş aralık
+              y: row * 250 + 100, // Çok daha yüksek aralık
+            },
+          };
+        });
         
         // Layout sonrası fitView
         setTimeout(() => {
           try {
-            reactFlowInstance.fitView({ padding: 0.1 });
+            reactFlowInstance.fitView({ padding: 0.3 });
           } catch (error) {
             console.warn('Auto layout fitView hatası:', error);
           }
@@ -87,14 +99,95 @@ const FlowCanvas = () => {
       }
     };
 
+    const handleSmartFormat = () => {
+      console.log('Akıllı formatla tetiklendi');
+      setNodes((currentNodes) => {
+        // Bağlantı tabanlı hiyerarşik düzen
+        const nodeMap = new Map(currentNodes.map(node => [node.id, node]));
+        const connections = edges.reduce((acc, edge) => {
+          if (!acc[edge.source]) acc[edge.source] = [];
+          acc[edge.source].push(edge.target);
+          return acc;
+        }, {});
+
+        // Root node'ları bul (giriş bağlantısı olmayan)
+        const hasIncoming = new Set(edges.map(edge => edge.target));
+        const rootNodes = currentNodes.filter(node => !hasIncoming.has(node.id));
+        
+        const positioned = new Set();
+        const layoutedNodes = [...currentNodes];
+        let currentY = 100;
+        
+        // Her seviyeyi işle
+        const processLevel = (nodeIds, x) => {
+          const levelNodes = nodeIds.filter(id => !positioned.has(id));
+          if (levelNodes.length === 0) return;
+          
+          levelNodes.forEach((nodeId, index) => {
+            const node = nodeMap.get(nodeId);
+            if (node) {
+              const nodeIndex = layoutedNodes.findIndex(n => n.id === nodeId);
+              if (nodeIndex !== -1) {
+                layoutedNodes[nodeIndex] = {
+                  ...layoutedNodes[nodeIndex],
+                  position: {
+                    x: x,
+                    y: currentY + (index * 280) // Node'lar arası daha fazla mesafe
+                  }
+                };
+                positioned.add(nodeId);
+              }
+            }
+          });
+          
+          // Bir sonraki seviyeye geç
+          const nextLevel = levelNodes.flatMap(nodeId => connections[nodeId] || []);
+          if (nextLevel.length > 0) {
+            processLevel(nextLevel, x + 500); // Sütunlar arası daha fazla mesafe
+          }
+        };
+
+        // Root node'lardan başla
+        if (rootNodes.length > 0) {
+          processLevel(rootNodes.map(n => n.id), 100);
+        } else {
+          // Eğer root yoksa, grid düzeni kullan
+          layoutedNodes.forEach((node, index) => {
+            const col = index % 2;
+            const row = Math.floor(index / 2);
+            layoutedNodes[index] = {
+              ...node,
+              position: {
+                x: col * 500 + 100,
+                y: row * 280 + 100,
+              }
+            };
+          });
+        }
+        
+        // Layout sonrası fitView
+        setTimeout(() => {
+          try {
+            reactFlowInstance.fitView({ padding: 0.2 });
+          } catch (error) {
+            console.warn('Smart format fitView hatası:', error);
+          }
+        }, 100);
+        
+        return layoutedNodes;
+      });
+    };
+
     // Event listener'ları ekle
     window.addEventListener('autoLayout', handleAutoLayout);
+    window.addEventListener('smartFormat', handleSmartFormat);
     window.addEventListener('zoomIn', handleZoomIn);
     window.addEventListener('zoomOut', handleZoomOut);
 
     // Cleanup
     return () => {
       window.removeEventListener('autoLayout', handleAutoLayout);
+      window.removeEventListener('smartFormat', handleSmartFormat);
       window.removeEventListener('zoomIn', handleZoomIn);
       window.removeEventListener('zoomOut', handleZoomOut);
     };

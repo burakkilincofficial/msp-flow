@@ -235,24 +235,38 @@
 /* Bağlantı çizgilerini daha belirgin yap */
 .react-flow__edge-path {
   stroke: #667eea !important;
-  stroke-width: 3px !important;
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3)) !important;
 }
 
 .react-flow__edge:hover .react-flow__edge-path {
   stroke: #4f46e5 !important;
-  stroke-width: 4px !important;
+  stroke-width: 5px !important;
+  filter: drop-shadow(0 3px 6px rgba(79, 70, 229, 0.4)) !important;
 }
 
 .react-flow__edge.selected .react-flow__edge-path {
   stroke: #10b981 !important;
-  stroke-width: 4px !important;
+  stroke-width: 5px !important;
+  filter: drop-shadow(0 3px 6px rgba(16, 185, 129, 0.4)) !important;
 }
 
 /* Connection line styling */
 .react-flow__connection-line {
   stroke: #667eea !important;
-  stroke-width: 3px !important;
-  stroke-dasharray: 5,5 !important;
+  stroke-width: 4px !important;
+  stroke-dasharray: 8,4 !important;
+  filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3)) !important;
+}
+
+/* Edge labels daha görünür */
+.react-flow__edge-text {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  fill: #1f2937 !important;
+  background: white !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
 }
 
 /* Exception Info */
