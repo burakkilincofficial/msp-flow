@@ -102,7 +102,7 @@ const FlowCanvas = () => {
     const handleSmartFormat = () => {
       console.log('Akıllı formatla tetiklendi');
       setNodes((currentNodes) => {
-        // Bağlantı tabanlı hiyerarşik düzen
+        // Bağlantı tabanlı hiyerarşik düzen - JSON ağacı gibi
         const nodeMap = new Map(currentNodes.map(node => [node.id, node]));
         const connections = edges.reduce((acc, edge) => {
           if (!acc[edge.source]) acc[edge.source] = [];
@@ -116,14 +116,17 @@ const FlowCanvas = () => {
         
         const positioned = new Set();
         const layoutedNodes = [...currentNodes];
-        let currentY = 100;
         
-        // Her seviyeyi işle
-        const processLevel = (nodeIds, x) => {
-          const levelNodes = nodeIds.filter(id => !positioned.has(id));
-          if (levelNodes.length === 0) return;
+        // Hiyerarşik seviye tabanlı düzen (JSON tree benzeri)
+        const processLevel = (nodeIds, level, startY = 50) => {
+          if (nodeIds.length === 0) return startY;
           
-          levelNodes.forEach((nodeId, index) => {
+          let currentY = startY;
+          const levelHeight = 200; // Seviyeler arası yükseklik
+          
+          nodeIds.forEach((nodeId, index) => {
+            if (positioned.has(nodeId)) return;
+            
             const node = nodeMap.get(nodeId);
             if (node) {
               const nodeIndex = layoutedNodes.findIndex(n => n.id === nodeId);
@@ -131,48 +134,69 @@ const FlowCanvas = () => {
                 layoutedNodes[nodeIndex] = {
                   ...layoutedNodes[nodeIndex],
                   position: {
-                    x: x,
-                    y: currentY + (index * 280) // Node'lar arası daha fazla mesafe
+                    x: 50 + (level * 400), // Seviye derinliği 400px aralıklarla
+                    y: currentY
                   }
                 };
                 positioned.add(nodeId);
+                
+                // Alt seviyeyi işle
+                const children = connections[nodeId] || [];
+                if (children.length > 0) {
+                  currentY = processLevel(children, level + 1, currentY + 80);
+                } else {
+                  currentY += levelHeight;
+                }
               }
             }
           });
           
-          // Bir sonraki seviyeye geç
-          const nextLevel = levelNodes.flatMap(nodeId => connections[nodeId] || []);
-          if (nextLevel.length > 0) {
-            processLevel(nextLevel, x + 500); // Sütunlar arası daha fazla mesafe
-          }
+          return currentY;
         };
 
         // Root node'lardan başla
         if (rootNodes.length > 0) {
-          processLevel(rootNodes.map(n => n.id), 100);
+          processLevel(rootNodes.map(n => n.id), 0, 50);
         } else {
-          // Eğer root yoksa, grid düzeni kullan
+          // Eğer root yoksa, JSON object benzeri grid düzeni
           layoutedNodes.forEach((node, index) => {
-            const col = index % 2;
-            const row = Math.floor(index / 2);
+            const itemsPerColumn = 5; // Her sütunda 5 item
+            const col = Math.floor(index / itemsPerColumn);
+            const row = index % itemsPerColumn;
+            
             layoutedNodes[index] = {
               ...node,
               position: {
-                x: col * 500 + 100,
-                y: row * 280 + 100,
+                x: 50 + (col * 350), // Sütunlar 350px aralıklarla
+                y: 50 + (row * 180), // Satırlar 180px aralıklarla
               }
             };
           });
         }
         
+        // Konumlandırılmamış node'ları alt kısma yerleştir
+        const unpositioned = currentNodes.filter(node => !positioned.has(node.id));
+        unpositioned.forEach((node, index) => {
+          const nodeIndex = layoutedNodes.findIndex(n => n.id === node.id);
+          if (nodeIndex !== -1) {
+            layoutedNodes[nodeIndex] = {
+              ...layoutedNodes[nodeIndex],
+              position: {
+                x: 50 + (index % 4) * 300,
+                y: 800 + Math.floor(index / 4) * 180
+              }
+            };
+          }
+        });
+        
         // Layout sonrası fitView
         setTimeout(() => {
           try {
-            reactFlowInstance.fitView({ padding: 0.2 });
+            reactFlowInstance.fitView({ padding: 0.1, maxZoom: 1.2 });
           } catch (error) {
             console.warn('Smart format fitView hatası:', error);
           }
-        }, 100);
+        }, 150);
         
         return layoutedNodes;
       });
@@ -192,6 +216,19 @@ const FlowCanvas = () => {
       window.removeEventListener('zoomOut', handleZoomOut);
     };
   }, [setNodes, reactFlowInstance]);
+
+  // Node tıklama olayı - zoom'u ve default davranışları engelle
+  const onNodeClick = useCallback((event, node) => {
+    event.stopPropagation();
+    event.preventDefault();
+    console.log('Node seçildi:', node);
+    setSelectedElement(node);
+  }, [setSelectedElement]);
+
+  // Pane tıklama olayı - node dışı alanlar için
+  const onPaneClick = useCallback(() => {
+    setSelectedElement(null);
+  }, [setSelectedElement]);
 
   // Bağlantı oluşturma
   const onConnect = useCallback(
@@ -228,12 +265,6 @@ const FlowCanvas = () => {
     },
     [edges, setEdges, flowData, setFlowData]
   );
-
-  // Node seçimi
-  const onNodeClick = useCallback((event, node) => {
-    console.log('Node seçildi:', node);
-    setSelectedElement(node);
-  }, [setSelectedElement]);
 
   // Node hareket ettirme
   const onNodeDragStop = useCallback((event, node) => {
@@ -309,6 +340,7 @@ const FlowCanvas = () => {
         onEdgesDelete={onEdgesDelete}
         onNodesDelete={onNodesDelete}
         onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
         onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         fitView
@@ -321,6 +353,11 @@ const FlowCanvas = () => {
         nodesDraggable={true}
         nodesConnectable={true}
         elementsSelectable={true}
+        selectNodesOnDrag={false}
+        panOnDrag={true}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={false}
         connectionMode="loose"
         snapToGrid={false}
         snapGrid={[15, 15]}

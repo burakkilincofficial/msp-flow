@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Toolbar from './components/Toolbar';
 import ConnectionGuide from './components/ConnectionGuide';
+import FlowRuleImporter from './components/FlowRuleImporter';
 import { XmlProcessor } from './utils/xmlProcessor';
 import { FlowProvider } from './context/FlowContext';
 import 'reactflow/dist/style.css';
@@ -74,6 +75,7 @@ function App() {
   const [selectedElement, setSelectedElement] = useState(null);
   const [xmlContent, setXmlContent] = useState('');
   const [appReady, setAppReady] = useState(false);
+  const [activeTab, setActiveTab] = useState('canvas'); // 'canvas' veya 'importer'
 
   // App başlatma
   useEffect(() => {
@@ -189,20 +191,45 @@ function App() {
       <FlowProvider value={contextValue}>
         <div className="app">
           <Header />
-          <Toolbar 
-            onFileUpload={handleFileUpload}
-            onExportXml={handleExportXml}
-            isLoading={isLoading}
-          />
           
-          <div className="app-content">
-            <Sidebar />
-            <ReactFlowProvider>
-              <FlowCanvas />
-            </ReactFlowProvider>
+          {/* Tab Navigation */}
+          <div className="tab-navigation">
+            <button 
+              className={`tab-button ${activeTab === 'canvas' ? 'active' : ''}`}
+              onClick={() => setActiveTab('canvas')}
+            >
+              📊 Flow Canvas
+            </button>
+            <button 
+              className={`tab-button ${activeTab === 'importer' ? 'active' : ''}`}
+              onClick={() => setActiveTab('importer')}
+            >
+              📥 Flow Rule İçe Aktarma
+            </button>
           </div>
-          
-          <ConnectionGuide />
+
+          {activeTab === 'canvas' ? (
+            <>
+              <Toolbar 
+                onFileUpload={handleFileUpload}
+                onExportXml={handleExportXml}
+                isLoading={isLoading}
+              />
+              
+              <div className="app-content">
+                <Sidebar />
+                <ReactFlowProvider>
+                  <FlowCanvas />
+                </ReactFlowProvider>
+              </div>
+              
+              <ConnectionGuide />
+            </>
+          ) : (
+            <div className="importer-content">
+              <FlowRuleImporter />
+            </div>
+          )}
           
           {isLoading && (
             <div className="loading-overlay">
