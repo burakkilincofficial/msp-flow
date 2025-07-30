@@ -46,24 +46,15 @@ const FlowCanvas = () => {
   // Toolbar event listener'ları
   useEffect(() => {
     const handleAutoLayout = () => {
-      console.log('Akıllı formatla tetiklendi');
+      console.log('Otomatik Düzen - Dikey Sıralama');
       setNodes((currentNodes) => {
-        // Hiyerarşik düzen için node'ları sırala
-        const sortedNodes = [...currentNodes].sort((a, b) => {
-          // Önce elementType'a göre sırala (if, invoke, foreach)
-          const typeOrder = { 'if': 1, 'elseif': 2, 'else': 3, 'invoke': 4, 'foreach': 5 };
-          return (typeOrder[a.data.elementType] || 6) - (typeOrder[b.data.elementType] || 6);
-        });
-
-        const layoutedNodes = sortedNodes.map((node, index) => {
-          const col = index % 2; // 2 sütun - daha az karışıklık
-          const row = Math.floor(index / 2); // Satır
-          
+        // Basit dikey sıralama - alt alta düz
+        const layoutedNodes = currentNodes.map((node, index) => {
           return {
             ...node,
             position: {
-              x: col * 450 + 100, // Çok daha geniş aralık
-              y: row * 250 + 100, // Çok daha yüksek aralık
+              x: 200, // Tüm node'lar aynı x pozisyonunda (dikey çizgi)
+              y: 60 + (index * 120), // Her node 120px aşağıda
             },
           };
         });
@@ -71,7 +62,7 @@ const FlowCanvas = () => {
         // Layout sonrası fitView
         setTimeout(() => {
           try {
-            reactFlowInstance.fitView({ padding: 0.3 });
+            reactFlowInstance.fitView({ padding: 0.1, maxZoom: 1.2 });
           } catch (error) {
             console.warn('Auto layout fitView hatası:', error);
           }
@@ -217,6 +208,8 @@ const FlowCanvas = () => {
     };
   }, [setNodes, reactFlowInstance]);
 
+
+
   // Node tıklama olayı - zoom'u ve default davranışları engelle
   const onNodeClick = useCallback((event, node) => {
     event.stopPropagation();
@@ -233,7 +226,11 @@ const FlowCanvas = () => {
   // Bağlantı oluşturma
   const onConnect = useCallback(
     (params) => {
-      const newEdge = addEdge(params, edges);
+      const newEdge = addEdge({
+        ...params,
+        type: 'straight', // Düz çizgi
+        style: { stroke: '#667eea', strokeWidth: 2 }
+      }, edges);
       setEdges(newEdge);
       
       // FlowData'yı güncelle
@@ -361,8 +358,8 @@ const FlowCanvas = () => {
         connectionMode="loose"
         snapToGrid={false}
         snapGrid={[15, 15]}
-        connectionLineType="smoothstep"
-        connectionLineStyle={{ stroke: '#667eea', strokeWidth: 3 }}
+        connectionLineType="straight"
+        connectionLineStyle={{ stroke: '#667eea', strokeWidth: 2 }}
       >
         <Controls />
         <MiniMap 
